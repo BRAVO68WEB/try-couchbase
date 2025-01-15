@@ -1,0 +1,24 @@
+{
+	"name": "try-couchbase",
+	"type": "module",
+	"module": "index.ts",
+	"scripts": {
+		"prettier": "prettier --write .",
+		"dev": "bun run --hot index.ts"
+	},
+	"dependencies": {
+		"hono": "^4.6.16",
+		"hyperflake": "^0.1.4",
+		"ottoman": "^2.3.2",
+		"zod": "^3.24.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"devDependencies": {
+		"@bravo68web/prettier-config": "^1.2.5",
+		"@types/bun": "latest",
+		"prettier": "^3.4.2"
+	},
+	"prettier": "@bravo68web/prettier-config"
+}
