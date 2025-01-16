@@ -1,19 +1,56 @@
 import { Hono } from "hono";
+import { validator as vValidator } from 'hono-openapi/zod';
 
 import { ReviewController } from "../controllers/review.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { addReviewInputSchema, getReviewsByBookParamsSchema, getReviewsByUserParamsSchema, reviewIdSchema, updateReviewInputSchema } from "../schemas/review";
+import { addReviewValidator, getReviewByIdValidator, getReviewsByBookValidator, getReviewsByUserValidator, updateReviewValidator } from "../validators/reviews";
 
 export const reviewRouter = new Hono();
 
 const reviewController = new ReviewController();
 
-reviewRouter.get("/", reviewController.getReviews);
-reviewRouter.get("/i/:id", reviewController.getReviewById);
-reviewRouter.get("/book/:book_id", reviewController.getReviewsByBookId);
-reviewRouter.get("/user/:user_id", reviewController.getReviewsByUserId);
+reviewRouter.get(
+    "/",
+    getReviewsByUserValidator(),
+    reviewController.getReviews
+);
+reviewRouter.get(
+    "/i/:id",
+    getReviewByIdValidator(),
+    vValidator("param", reviewIdSchema),
+    reviewController.getReviewById
+);
+reviewRouter.get(
+    "/book/:book_id",
+    getReviewsByBookValidator(),
+    vValidator("param", getReviewsByBookParamsSchema),
+    reviewController.getReviewsByBookId
+);
+reviewRouter.get(
+    "/user/:user_id",
+    getReviewsByUserValidator(),
+    vValidator("param", getReviewsByUserParamsSchema),
+    reviewController.getReviewsByUserId
+);
 
 reviewRouter.use("*", authMiddleware());
 
-reviewRouter.post("/", reviewController.addReview);
-reviewRouter.put("/i/:id", reviewController.updateReview);
-reviewRouter.delete("/i/:id", reviewController.deleteReview);
+reviewRouter.post(
+    "/",
+    addReviewValidator(),
+    vValidator("json", addReviewInputSchema),
+    reviewController.addReview
+);
+reviewRouter.put(
+    "/i/:id",
+    updateReviewValidator(),
+    vValidator("param", reviewIdSchema),
+    vValidator("json", updateReviewInputSchema),
+    reviewController.updateReview
+);
+reviewRouter.delete(
+    "/i/:id",
+    vValidator("param", reviewIdSchema),
+    reviewController.deleteReview
+);

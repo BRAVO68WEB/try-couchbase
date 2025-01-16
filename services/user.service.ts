@@ -1,20 +1,22 @@
 import { sign } from 'hono/jwt';
 import * as crypto from 'node:crypto';
+import { FindOptions } from 'ottoman';
 
 import { User, type IUser } from '../models/user.model';
 import { config } from '../config/env';
 
 export class UserService {
 	public addUser = async (name: string, email: string, password: string) => {
-		const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-
-        const existingUser = await User.findOne({
-            email,
-        });
-
+		const existingUser = await User.findOne({
+			email,
+        })
+		.catch(() => null);
+		
         if(existingUser) {
-            throw new Error('User already exists');
+			throw new Error('User already exists');
         }
+		
+		const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
 		const user = await User.create({
 			name,
@@ -31,7 +33,8 @@ export class UserService {
 	public validateUserCreds = async (email: string, password: string) => {
 		const user = await User.findOne({
 			email,
-		});
+		})
+		.catch(() => null);
 
 		if (!user) {
 			throw new Error('User not found');
