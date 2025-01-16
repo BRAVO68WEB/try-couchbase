@@ -100,7 +100,7 @@ export const whoamiValidator = (): MiddlewareHandler => {
                         "error": "document not found"
                     }
                 }
-            }
+            } 
         }
     });
 };
